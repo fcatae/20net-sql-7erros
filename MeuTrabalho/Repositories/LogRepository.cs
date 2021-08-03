@@ -19,7 +19,7 @@ namespace MeuTrabalho.Repositories
         {
             try
             {
-                SqlCommand command = new SqlCommand("SELECT * FROM tbLog", this._connection);
+                SqlCommand command = new SqlCommand("SELECT * FROM tbLog ORDER BY 1", this._connection);
 
                 var reader = command.ExecuteReader();
                 int total = 0;
