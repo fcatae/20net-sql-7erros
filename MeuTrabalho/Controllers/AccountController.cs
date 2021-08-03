@@ -24,7 +24,7 @@ namespace MeuTrabalho.Controllers
             try
             {
                 SqlConnection connection = new SqlConnection("Server=martedb.database.windows.net;Database=sql7;User=aclogin;Password=homework-ago21");
-                SqlCommand cmd = new SqlCommand($"SELECT username FROM tbLogin WHERE email='{model.Email}' AND pwd='{model.Password}'", connection);
+                SqlCommand cmd = new SqlCommand($"SELECT username FROM tbLogin WHERE email='" + model.Email + "' AND pwd='" + model.Password + "'", connection);
 
                 connection.Open();
                 string username = (string)cmd.ExecuteScalar().ToString();

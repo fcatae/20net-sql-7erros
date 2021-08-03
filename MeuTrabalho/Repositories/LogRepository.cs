@@ -23,10 +23,9 @@ namespace MeuTrabalho.Repositories
 
                 var reader = command.ExecuteReader();
                 int total = 0;
-                while (reader.HasRows)
+                while (reader.Read())
                 {
                     total = total + 1;
-                    reader.Read();
                 }
 
                 reader.Close();

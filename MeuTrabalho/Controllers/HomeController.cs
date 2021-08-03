@@ -44,15 +44,15 @@ namespace MeuTrabalho.Controllers
 
         public IActionResult About([FromQuery]string teste = "")
         {
-            if(teste == "")
-            {
-                teste = logRepository.TotalRegistros().ToString();
-            }
-
-            ViewData["Message"] = "Total de acessos: " + teste;
-
             try
             {
+                if (teste == "")
+                {
+                    teste = logRepository.TotalRegistros().ToString();
+                }
+
+                ViewData["Message"] = "Total de acessos: " + teste;
+
                 SqlCommand sql = new SqlCommand("INSERT tbLog VALUES ('about')", _globalConnection);
                 var retorno = sql.ExecuteReader();   
                 
