@@ -28,6 +28,7 @@ namespace MeuTrabalho.Controllers
 
                 connection.Open();
                 string username = (string)cmd.ExecuteScalar().ToString();
+                connection.Close();
 
                 return Redirect($"/Home/Dashboard?name={username}");
             }
