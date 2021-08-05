@@ -84,10 +84,12 @@ namespace MeuTrabalho.Controllers
             }
             catch(OutOfMemoryException ex)
             {
+                Console.WriteLine(ex.Message);
                 return RedirectToAction("Error");
             }
             catch(Exception ex)
             {
+                Console.WriteLine(ex.Message);
                 throw ex;
             }
 
