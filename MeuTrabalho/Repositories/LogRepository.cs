@@ -39,12 +39,7 @@ namespace MeuTrabalho.Repositories
                 sql.Connection = connection;
 
                 sql.ExecuteScalar();
-
             }
-
-            reader.Close();
-
-            return total;
         }
     }
 }
