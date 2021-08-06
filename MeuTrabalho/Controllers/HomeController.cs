@@ -5,25 +5,17 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using MeuTrabalho.Models;
-using System.Data.SqlClient;
 using MeuTrabalho.Repositories;
 
 namespace MeuTrabalho.Controllers
 {
-    public class HomeController : Controller, IDisposable
+    public class HomeController : Controller
     {
-        static SqlConnection _globalConnection = null;
-        readonly LogRepository logRepository;
+        ILogRepository _logRepository;
 
-        public HomeController()
+        public HomeController(ILogRepository logRepository)
         {
-            if(_globalConnection == null)
-            {
-                _globalConnection = new SqlConnection("Server=martedb.database.windows.net;Database=sql7;User=app;Password=homework-ago21;Max Pool Size=2");
-                _globalConnection.Open();
-            }
-
-            logRepository = new LogRepository(_globalConnection);
+            this._logRepository = logRepository;
         }
 
         public IActionResult Index()
@@ -44,27 +36,14 @@ namespace MeuTrabalho.Controllers
 
         public IActionResult About([FromQuery]string teste = "")
         {
-            try
+            if (teste == "")
             {
-                if (teste == "")
-                {
-                    teste = logRepository.TotalRegistros().ToString();
-                }
-
-                ViewData["Message"] = "Total de acessos: " + teste;
-
-                SqlCommand sql = new SqlCommand("INSERT tbLog VALUES ('about')", _globalConnection);
-                var retorno = sql.ExecuteReader();   
-                
-                if( retorno == null )
-                {
-                    return RedirectToAction("RETORNO NULO");
-                }
+                teste = _logRepository.TotalRegistros().ToString();
             }
-            catch(Exception ex)
-            {
-                ViewData["Message"] = "ERROR ABOUT";
-            }
+
+            ViewData["Message"] = "Total de acessos: " + teste;
+
+            _logRepository.CriarLog("about");
 
             return View();
         }
@@ -73,25 +52,7 @@ namespace MeuTrabalho.Controllers
         {
             ViewData["Message"] = "Your contact page.";
 
-            try
-            {
-                SqlConnection conn1 = _globalConnection;
-
-                SqlCommand sql = new SqlCommand("INSERT tbLog VALUES ('contact')");
-                sql.Connection = conn1;
-
-                sql.ExecuteScalar();
-            }
-            catch(OutOfMemoryException ex)
-            {
-                Console.WriteLine(ex.Message);
-                return RedirectToAction("Error");
-            }
-            catch(Exception ex)
-            {
-                Console.WriteLine(ex.Message);
-                throw ex;
-            }
+            _logRepository.CriarLog("contact");
 
             return View();
         }
