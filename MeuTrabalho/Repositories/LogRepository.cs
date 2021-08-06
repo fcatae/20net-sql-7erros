@@ -41,6 +41,10 @@ namespace MeuTrabalho.Repositories
                 sql.ExecuteScalar();
 
             }
+
+            reader.Close();
+
+            return total;
         }
     }
 }
