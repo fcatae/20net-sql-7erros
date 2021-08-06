@@ -21,20 +21,27 @@ namespace MeuTrabalho.Controllers
         [ValidateAntiForgeryToken]
         public IActionResult Index(LoginViewModel model)
         {
-            try
+            string commandText = "SELECT username FROM tbLogin WHERE email=@p1 AND pwd=@p2";
+
+            using(SqlConnection connection = new SqlConnection("Server=.;Database=sql20;Integrated Security=SSPI"))
             {
-                SqlConnection connection = new SqlConnection("Server=martedb.database.windows.net;Database=sql7;User=aclogin;Password=homework-ago21");
-                SqlCommand cmd = new SqlCommand($"SELECT username FROM tbLogin WHERE email='" + model.Email + "' AND pwd='" + model.Password + "'", connection);
+                SqlCommand cmd = new SqlCommand(commandText, connection);
+                cmd.Parameters.AddWithValue("@p1", model.Email ?? "");
+                cmd.Parameters.AddWithValue("@p2", model.Password ?? "");
 
                 connection.Open();
-                string username = (string)cmd.ExecuteScalar().ToString();
-                connection.Close();
+                object retorno = cmd.ExecuteScalar();
 
-                return Redirect($"/Home/Dashboard?name={username}");
-            }
-            catch(Exception ex)
-            {
-                return View(model);
+                if (retorno != null)
+                {
+                    string username = retorno.ToString();
+
+                    return Redirect($"/Home/Dashboard?name={username}");
+                }
+                else
+                {
+                    return View();
+                }
             }
         }
     }

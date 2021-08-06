@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace MeuTrabalho.Repositories
 {
-    public class LogRepository
+    public class LogRepository 
     {
         SqlConnection _connection;
 
@@ -17,25 +17,18 @@ namespace MeuTrabalho.Repositories
 
         public int TotalRegistros()
         {
-            try
+            SqlCommand command = new SqlCommand("SELECT * FROM tbLog ORDER BY 1", this._connection);
+
+            var reader = command.ExecuteReader();
+            int total = 0;
+            while (reader.Read())
             {
-                SqlCommand command = new SqlCommand("SELECT * FROM tbLog ORDER BY 1", this._connection);
-
-                var reader = command.ExecuteReader();
-                int total = 0;
-                while (reader.Read())
-                {
-                    total = total + 1;
-                }
-
-                reader.Close();
-
-                return total;
+                total = total + 1;
             }
-            catch(Exception ex)
-            {
-                throw ex;
-            }
+
+            reader.Close();
+
+            return total;
         }
     }
 }

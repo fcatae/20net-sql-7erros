@@ -12,18 +12,8 @@ namespace MeuTrabalho.Controllers
 {
     public class HomeController : Controller, IDisposable
     {
-        static SqlConnection _globalConnection = null;
-        readonly LogRepository logRepository;
-
         public HomeController()
         {
-            if(_globalConnection == null)
-            {
-                _globalConnection = new SqlConnection("Server=martedb.database.windows.net;Database=sql7;User=app;Password=homework-ago21;Max Pool Size=2");
-                _globalConnection.Open();
-            }
-
-            logRepository = new LogRepository(_globalConnection);
         }
 
         public IActionResult Index()
@@ -44,8 +34,11 @@ namespace MeuTrabalho.Controllers
 
         public IActionResult About([FromQuery]string teste = "")
         {
-            try
+            using (SqlConnection connection = new SqlConnection("Server=.;Database=sql20;Integrated Security=SSPI;Connection Timeout=3;Max Pool Size=5"))
             {
+                connection.Open();
+                LogRepository logRepository = new LogRepository(connection);
+
                 if (teste == "")
                 {
                     teste = logRepository.TotalRegistros().ToString();
@@ -53,47 +46,35 @@ namespace MeuTrabalho.Controllers
 
                 ViewData["Message"] = "Total de acessos: " + teste;
 
-                SqlCommand sql = new SqlCommand("INSERT tbLog VALUES ('about')", _globalConnection);
-                var retorno = sql.ExecuteReader();   
-                
-                if( retorno == null )
+                SqlCommand sql = new SqlCommand("INSERT tbLog VALUES ('about')", connection);
+                var retorno = sql.ExecuteReader();
+
+                if (retorno == null)
                 {
                     return RedirectToAction("RETORNO NULO");
                 }
-            }
-            catch(Exception ex)
-            {
-                ViewData["Message"] = "ERROR ABOUT";
-            }
 
-            return View();
+                return View();
+            }
         }
 
         public IActionResult Contact()
         {
             ViewData["Message"] = "Your contact page.";
 
-            try
+            using (SqlConnection connection = new SqlConnection("Server=.;Database=sql20;Integrated Security=SSPI;Connection Timeout=3;Max Pool Size=5"))
             {
-                SqlConnection conn1 = _globalConnection;
+                connection.Open();
+
+                SqlConnection conn1 = connection;
 
                 SqlCommand sql = new SqlCommand("INSERT tbLog VALUES ('contact')");
                 sql.Connection = conn1;
 
                 sql.ExecuteScalar();
-            }
-            catch(OutOfMemoryException ex)
-            {
-                Console.WriteLine(ex.Message);
-                return RedirectToAction("Error");
-            }
-            catch(Exception ex)
-            {
-                Console.WriteLine(ex.Message);
-                throw ex;
-            }
 
-            return View();
+                return View();
+            }
         }
 
         public IActionResult Error()
