@@ -46,7 +46,6 @@ namespace MeuTrabalho.Controllers
             _logRepository.CriarLog("about");
 
                 return View();
-            }
         }
 
         public IActionResult Contact()
